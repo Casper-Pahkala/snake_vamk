@@ -11,13 +11,20 @@
     
 
     <div class="top-bar">
-        <p style="text-align: center; font-size: 44px; font-family: monospace; color:whitesmoke;">Snake</p>
+        <p style="text-align: center; margin:10px; font-size: 44px; font-family: monospace; color:whitesmoke;">Snake</p>
+        <p id="scoreText" style="text-align: center; font-size: 20px; font-family: monospace; color:whitesmoke;">Score: 0</p>
     </div>
-    <div style="border: 2px solid; border-color: antiquewhite; margin: auto; width: fit-content; padding: 0px;">
-        <div id="board" class="snake-board">
-            
+
+    <div id="playButtonContainer" style="text-align: center; margin-top: 200px">
+        <button id="playButton" class="playButton" role="button">Play</button>
+
+    </div>
+    <div id="boardContainer" style="margin: auto; width: fit-content; padding: 0px; display: none;">
+        <div id="board" class="snake-board">            
 
         </div>
+        <button id="playAgainButton" class="playButton" role="button" style="transform: translateY(-300px) translateX(200px); display: none;" >Play again</button>
+
     </div>
 <script src="snake_logic.js"></script>
 </body>
