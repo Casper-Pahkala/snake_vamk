@@ -1,0 +1,41 @@
+.top-bar{
+    height: 60px;
+    align-items: center;
+    
+}
+.snake-board{
+    width: 600px;
+    height: 600px;
+    display: inline-block;
+    position: relative;
+}
+.contents {
+    /* match size of .container, without influencing it */
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.snake-head{
+    width: 30px;
+    height: 30px;
+    background-color: greenyellow;
+    position: absolute;
+    z-index: 1;
+}
+
+.snake-body {
+    width: 30px;
+    height: 30px;
+    background-color: black;
+    position: absolute;
+}
+.snake-fruit {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    position: absolute;
+}
