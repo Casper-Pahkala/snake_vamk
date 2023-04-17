@@ -4,7 +4,8 @@ var currentPosition;
 var headPositions = [
     [0, 0]
 ];
-var scoreText = document.getElementById('scoreText');
+
+var scoreText = document.getElementsByTagName
 var score = 0;
 var snakeBodies = [];
 var playAgainButton = document.getElementById('playAgainButton');
@@ -16,15 +17,6 @@ var moveDirection = "right";
 var GameOver = false;
 var gameStarted = false;
 
-var xhr = new XMLHttpRequest();
-xhr.open('POST', 'file:///Users/casperpahkala/Desktop/workspace/snake_vamk/test.txt', true);
-xhr.setRequestHeader('Content-Type', 'application/json');
-xhr.onreadystatechange = function() {
-    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      console.log(xhr.responseText);
-    }
-  };
-xhr.send('test');
 
 const playButton = document.getElementById('playButton');
 playButton.onclick = function() {
