@@ -1,10 +1,20 @@
 .top-bar{
     height: 30px;
     align-items: center;
-    
-    
 }
-
+.score {
+  text-align: center; 
+  font-size: 20px; 
+  font-family: monospace; 
+  color:whitesmoke;
+}
+.heading {
+  text-align: center;
+  margin:10px; 
+  font-size: 44px; 
+  font-family: monospace; 
+  color:whitesmoke;
+}
 .snake-board{
     width: 600px;
     height: 600px;
