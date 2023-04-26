@@ -22,7 +22,11 @@ var snakeSpeed = 120;
 const deathSound = new Audio('death_sound.mp3');
 const pointSound = new Audio('point_sound.mp3');
 const backgroundMusic = new Audio('background_music.mp3');
-
+let machineId = localStorage.getItem('MachineId');
+if (!machineId) {
+    machineId = crypto.randomUUID();
+    localStorage.setItem('MachineId', machineId);
+}
 //Get highscore from cache
 var highScore = localStorage.getItem('highScore');
 //If highscore is null, set it to 0
@@ -108,7 +112,7 @@ document.addEventListener("keydown", function (event) {
 
 document.addEventListener("keydown", function (event) {
     if (event.key === " ") {
-        spawnBody();
+        
     }
 });
 
@@ -122,19 +126,7 @@ function moveObjects() {
         }
     }
     if (currentX == currentFruitPosition[0] && currentY == currentFruitPosition[1]) {
-        //Fruit eaten
-        score += 1;
-        if(score > highScore) {
-            highScore = score;
-            localStorage.setItem('highScore', highScore);
-            highScoreText.innerHTML = 'High score: ' + highScore;
-        }
-        snakeSpeed += 2;
-        const pointSound = new Audio('point_sound.mp3');
-        pointSound.play();
-        scoreText.innerHTML = 'Score: ' + score;
-        spawnBody();
-        spawnFruit();
+        eatFruit();
     }
     //Check if head is outside bounds
     if (currentX < 0 || currentX>570 || currentY < 0 || currentY > 570) {
@@ -155,6 +147,27 @@ function moveObjects() {
             snakeBodies[i].style.transform = `translateY(${headPositions[i + 1][1]}px) translateX(${headPositions[i + 1][0]}px)`;
         }
     }
+}
+
+function eatFruit() {
+    score += 1;
+    if(score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        highScoreText.innerHTML = 'High score: ' + highScore;
+        //Save highscore to firebase database
+        const data = {'deviceId' : machineId , 'name' : 'test', 'highScore' : highScore}
+        var request = firebase.functions().httpsCallable('uploadScore');
+        request(data).then((result) => {
+        });
+    }
+    
+    snakeSpeed += 2;
+    const pointSound = new Audio('point_sound.mp3');
+    pointSound.play();
+    scoreText.innerHTML = 'Score: ' + score;
+    spawnBody();
+    spawnFruit();
 }
 
 function spawnBody() {
@@ -182,7 +195,6 @@ function spawnFruit() {
     }
     currentFruitPosition = [randomX, randomY];
     fruit.style.transform = `translateY(${currentFruitPosition[1]}px) translateX(${currentFruitPosition[0]}px)`;
-
 }
 
 function gameOver() {
