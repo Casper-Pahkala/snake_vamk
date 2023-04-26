@@ -9,7 +9,16 @@
 </head>
 <body style="margin: 0px; overflow: hidden; background-color: rgb(48, 48, 48);">
     
-
+<div style="display: flex; ">
+    <div style="margin-top: 0px; margin-left: 20px;">
+        <p
+            class="night-mode-text">
+            Night mode</p>
+        <label class="switch">
+            <input id="themeSlider" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+    </div>
     <div class="top-bar">
         <p class="heading">Snake</p>
         <div style="display: flex; justify-content: center; gap: 20px">
@@ -17,11 +26,15 @@
             <p id="highScoreText" class="score">High score: 0</p>
         </div>
     </div>
+</div>
 
     <div id="playButtonContainer" style="text-align: center; margin-top: 200px">
-        <button id="playButton" class="playButton" role="button">Play</button>
+        <button id="easyButton" class="playButton" role="button">Easy</button>
+        <button id="mediumButton" class="playButton" role="button">Medium</button>
+        <button id="hardButton" class="playButton" role="button">Hard</button>
 
     </div>
+    
     <div id="boardContainer" style="margin: auto; width: fit-content; padding: 0px; display: none;">
         <div id="board" class="snake-board">            
 
