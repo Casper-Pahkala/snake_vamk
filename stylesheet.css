@@ -81,6 +81,7 @@
   outline: none;
   overflow: visible;
   padding: 13px 16px;
+  margin:10px;
   text-align: center;
   text-transform: uppercase;
   touch-action: manipulation;
