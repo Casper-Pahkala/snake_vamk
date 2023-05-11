@@ -5,8 +5,8 @@ var headPositions = [
     [0, 0]
 ];
 
-var scoreText = document.getElementById('scoreText');
-var highScoreText = document.getElementById('highScoreText');
+const scoreText = document.getElementById('scoreText');
+const highScoreText = document.getElementById('highScoreText');
 var score = 0;
 var snakeBodies = [];
 var playAgainButton = document.getElementById('playAgainButton');
@@ -22,36 +22,10 @@ var snakeSpeed = 120;
 const deathSound = new Audio('death_sound.mp3');
 const pointSound = new Audio('point_sound.mp3');
 var backgroundMusic = new Audio('background_music.mp3');
+backgroundMusic.volume = 0.4;
 let machineId = localStorage.getItem('MachineId');
-const themeSlider = document.getElementById('themeSlider');
-themeSlider.checked = true;
-var nightMode = true;
-
-themeSlider.addEventListener('change', (event) => {
-    if (event.currentTarget.checked) {
-        themeToNight();
-    } else {
-        themeToLight();
-    }
-})  
-
-function themeToNight() {
-    document.body.style.backgroundColor = 'rgb(48, 48, 48)';
-    document.getElementsByClassName('heading')[0].style.color = 'whitesmoke';
-    document.getElementsByClassName('score')[0].style.color = 'whitesmoke';
-    document.getElementsByClassName('score')[1].style.color = 'whitesmoke';
-    document.getElementsByClassName('night-mode-text')[0].style.color = 'whitesmoke';
-    document.getElementsByClassName('snake-board')[0].style.borderColor = 'antiquewhite';
-}
-
-function themeToLight() {
-    document.body.style.backgroundColor = '#FFFAFA';
-    document.getElementsByClassName('heading')[0].style.color = 'rgb(48, 48, 48)';
-    document.getElementsByClassName('score')[0].style.color = 'rgb(48, 48, 48)';
-    document.getElementsByClassName('score')[1].style.color = 'rgb(48, 48, 48)';
-    document.getElementsByClassName('night-mode-text')[0].style.color = 'rgb(48, 48, 48)';
-    document.getElementsByClassName('snake-board')[0].style.borderColor = 'rgb(48, 48, 48)';
-}
+var enemyCount = 3;
+var enemyPositions = [];
 
 if (!machineId) {
     machineId = crypto.randomUUID();
@@ -72,17 +46,19 @@ mediumButton.onclick = mediumMode;
 hardButton.onclick = hardMode;
 
 function easyMode() {
+    enemyCount = 10;
     play(120);
 }
 function mediumMode() {
-    play(90);
+    enemyCount = 12;
+    play(100);
 }
 function hardMode() {
-    play(60);
+    enemyCount = 14;
+    play(80);
 }
 function play(speed) {
     snakeSpeed = speed;
-    console.log(snakeSpeed);
     const playButtonContainer = document.getElementById('playButtonContainer');
     playButtonContainer.remove();
     const boardContainer = document.getElementById('boardContainer');
@@ -107,6 +83,15 @@ function startGame() {
     spawnBody();
     spawnBody();
     spawnFruit();
+    enemyPositions = [];
+    var enemies = document.querySelectorAll(".enemy");
+
+    for (var i = 0; i < enemies.length; i++) {
+    enemies[i].remove();
+    }
+    for (let i = 0; i < enemyCount; i++) {
+        spawnEnemy();
+    }
     //Snake movement
     if (!gameStarted) {
         setInterval(moveHead, snakeSpeed);        
@@ -123,7 +108,6 @@ function spawnHead() {
 }
 document.addEventListener("keydown", function (event) {
     if (event.key === "w" || event.keyCode == '38') {
-        // Do something when "w" key is pressed
         if (actualMoveDirection != "down") {
             moveDirection = "up";
         }
@@ -132,7 +116,6 @@ document.addEventListener("keydown", function (event) {
 
 document.addEventListener("keydown", function (event) {
     if (event.key === "s" || event.keyCode == '40') {
-        // Do something when "w" key is pressed
         if (actualMoveDirection != "up") {
             moveDirection = "down";
         }
@@ -140,7 +123,6 @@ document.addEventListener("keydown", function (event) {
 });
 document.addEventListener("keydown", function (event) {
     if (event.key === "a" || event.keyCode == '37') {
-        // Do something when "w" key is pressed
         if (actualMoveDirection != "right") {
             moveDirection = "left";
         }
@@ -148,7 +130,6 @@ document.addEventListener("keydown", function (event) {
 });
 document.addEventListener("keydown", function (event) {
     if (event.key === "d" || event.keyCode == '39') {
-        // Do something when "w" key is pressed
         if (actualMoveDirection != "left") {
             moveDirection = "right";
             
@@ -158,8 +139,6 @@ document.addEventListener("keydown", function (event) {
 
 document.addEventListener("keydown", function (event) {
     if (event.key === "k") {
-        // Do something when "w" key is pressed
-
         spawnFruit();
     }
 });
@@ -181,6 +160,13 @@ function moveObjects() {
             }
         }
     }
+    //Check if head hits an enemy
+    for (let i=0; i < enemyPositions.length; i++) {
+        if (currentX == enemyPositions[i][0] && currentY == enemyPositions[i][1]) {
+            gameOver();
+        }
+    }
+    //Check if head eats a fruit
     if (currentX == currentFruitPosition[0] && currentY == currentFruitPosition[1]) {
         eatFruit();
     }
@@ -213,11 +199,6 @@ function eatFruit() {
         highScore = score;
         localStorage.setItem('highScore', highScore);
         highScoreText.innerHTML = 'High score: ' + highScore;
-        //Save highscore to firebase database
-        const data = {'deviceId' : machineId , 'name' : 'test', 'highScore' : highScore}
-        var request = firebase.functions().httpsCallable('uploadScore');
-        request(data).then((result) => {
-        });
     }
         const pointSound = new Audio('point_sound.mp3');
     pointSound.play();
@@ -238,13 +219,24 @@ function spawnFruit() {
     fruit.remove()
     const parentElement = document.getElementById("board");
     fruit = document.createElement("div");
-    fruit.classList.add("snake-fruit");
+    fruitImage = document.createElement("img");
+    fruitImage.setAttribute('src', 'apple.png');
+    fruitImage.classList.add("snake-fruit");
     parentElement.appendChild(fruit);
-    var randomX = Math.floor(Math.random() * 20) * 30;
-    var randomY = Math.floor(Math.random() * 20) * 30;
+    fruit.appendChild(fruitImage);
+    fruit.classList.add("snake-fruit");
+    let randomX = Math.floor(Math.random() * 20) * 30;
+    let randomY = Math.floor(Math.random() * 20) * 30;
     //Check if fruit position is inside the snake
-    for (var i = 0; i < headPositions.length; i++) {
+    for (let i = 0; i < headPositions.length; i++) {
         if(headPositions[i][0] == randomX && headPositions[i][1] == randomY) {
+            spawnFruit();
+            return;
+        }
+    }
+    //Check if fruit position is inside an enemy
+    for (let i=0; i < enemyPositions.length; i++) {
+        if (randomX == enemyPositions[i][0] && randomY == enemyPositions[i][1]) {
             spawnFruit();
             return;
         }
@@ -305,4 +297,20 @@ function moveHead() {
         headPositions.unshift([currentX, currentY]);
         moveObjects();
     }
+}
+
+function spawnEnemy() {
+    const parentElement = document.getElementById("board");
+    const enemy = document.createElement("div");
+    enemy.classList.add("enemy");
+    parentElement.appendChild(enemy);
+    let randomX = Math.floor(Math.random() * 20) * 30;
+    let randomY = Math.floor(Math.random() * 20) * 30;
+    if (randomX == currentFruitPosition[0] && randomY == currentFruitPosition[1]) {
+        spawnEnemy();
+        return;
+    }
+    let position = [randomX, randomY];
+    enemyPositions.push(position);
+    enemy.style.transform = `translateY(${randomY}px) translateX(${randomX}px)`;
 }
